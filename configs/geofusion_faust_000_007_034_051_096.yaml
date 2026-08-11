@@ -28,20 +28,20 @@ data:
     E: 3
   meshes:
     A:
-      local: /home/ben/LRZSyncShare/Thesis/Data/data/MPI-FAUST/training/registrations/tr_reg_000.ply
-      slurm: /home/stud/klb/storage/slurm/MPI-FAUST/training/registrations/tr_reg_000.ply
+      local: /path/to/data/MPI-FAUST/training/registrations/tr_reg_000.ply
+      slurm: /slurm/MPI-FAUST/training/registrations/tr_reg_000.ply
     B:
-      local: /home/ben/LRZSyncShare/Thesis/Data/data/MPI-FAUST/training/registrations/tr_reg_007.ply
-      slurm: /home/stud/klb/storage/slurm/MPI-FAUST/training/registrations/tr_reg_007.ply
+      local: /path/to/data/MPI-FAUST/training/registrations/tr_reg_007.ply
+      slurm: /slurm/MPI-FAUST/training/registrations/tr_reg_007.ply
     C:
-      local: /home/ben/LRZSyncShare/Thesis/Data/data/MPI-FAUST/training/registrations/tr_reg_034.ply
-      slurm: /home/stud/klb/storage/slurm/MPI-FAUST/training/registrations/tr_reg_034.ply
+      local: /path/to/data/MPI-FAUST/training/registrations/tr_reg_034.ply
+      slurm: /slurm/MPI-FAUST/training/registrations/tr_reg_034.ply
     D:
-      local: /home/ben/LRZSyncShare/Thesis/Data/data/MPI-FAUST/training/registrations/tr_reg_051.ply
-      slurm: /home/stud/klb/storage/slurm/MPI-FAUST/training/registrations/tr_reg_051.ply
+      local: /path/to/data/MPI-FAUST/training/registrations/tr_reg_051.ply
+      slurm: /slurm/MPI-FAUST/training/registrations/tr_reg_051.ply
     E:
-      local: /home/ben/LRZSyncShare/Thesis/Data/data/MPI-FAUST/training/registrations/tr_reg_096.ply
-      slurm: /home/stud/klb/storage/slurm/MPI-FAUST/training/registrations/tr_reg_096.ply
+      local: /path/to/data/MPI-FAUST/training/registrations/tr_reg_096.ply
+      slurm: /slurm/MPI-FAUST/training/registrations/tr_reg_096.ply
   normalize: true
   normalize_samples: 10000000
   normalize_chunk: 1000000

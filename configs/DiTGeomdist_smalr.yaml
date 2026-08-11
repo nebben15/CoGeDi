@@ -25,11 +25,11 @@ data:
     B: 6
   meshes:
     A:
-      local: /home/ben/LRZSyncShare/Thesis/Data/data/SMALR/dog_B/dog_B_posed_0000.obj
-      slurm: /home/stud/klb/storage/slurm/SMALR/dog_B/dog_B_posed_0000.obj
+      local: /path/to/data/SMALR/dog_B/dog_B_posed_0000.obj
+      slurm: /slurm/SMALR/dog_B/dog_B_posed_0000.obj
     B:
-      local: /home/ben/LRZSyncShare/Thesis/Data/data/SMALR/tiger_A/tiger_A_posed_00000.obj
-      slurm: /home/stud/klb/storage/slurm/SMALR/tiger_A/tiger_A_posed_00000.obj
+      local: /path/to/data/SMALR/tiger_A/tiger_A_posed_00000.obj
+      slurm: /slurm/SMALR/tiger_A/tiger_A_posed_00000.obj
   normalize: true
   normalize_samples: 10000000
   normalize_chunk: 1000000
