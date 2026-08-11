@@ -1,0 +1,125 @@
+run:
+  experiment_name: inverse_faust
+  mode: inverse
+  env: local
+  device: cuda
+  seed: 0
+
+paths:
+  logs:
+    local: /home/ben/LRZSyncShare/Thesis/Data/logs
+    slurm: /home/stud/klb/storage/slurm/logs
+  checkpoints:
+    local: /home/ben/LRZSyncShare/Thesis/Data/checkpoints
+    slurm: /home/stud/klb/storage/slurm/checkpoints
+  samples: 
+    local: /home/ben/LRZSyncShare/Thesis/Data/samples
+  eval: 
+    local: /home/ben/LRZSyncShare/Thesis/Data/eval
+
+data:
+  type: faust
+  modalities:
+    A: 3
+  meshes:
+    A:
+      local: /home/ben/LRZSyncShare/Thesis/Data/data/MPI-FAUST/training/registrations/tr_reg_000.ply
+      slurm: /home/stud/klb/storage/slurm/MPI-FAUST/training/registrations/tr_reg_000.ply
+  normalize: true
+  normalize_samples: 10000000
+  normalize_chunk: 1000000
+
+forward:
+  type: ve_forward_process
+  params: {}
+
+model:
+  type: diffusion_model
+  params:
+    conditioning:
+      type: unidiff_hard_conditioning
+      params: {}
+
+    parametrization:
+      type: x0_parametrization
+      params: {}
+
+    precond:
+      type: edm_preconditioning
+      params:
+        sigma_data: 1.0
+
+    point_embedder:
+      type: geomdist_point_embedder
+      params:
+        token_dim: 512
+        hidden_dim: 48
+
+    sigma_embedder:
+      type: geom_dist_fourier_embedder
+      params:
+        hidden_size: 512
+
+    backbone:
+      type: geomdist_backbone
+      params:
+        token_dim: 512
+        depth: 6
+        res_balance: 0.3
+
+schedule:
+  type: edm_sigma_schedule
+  params:
+    sigma_min: 0.002
+    sigma_max: 80.0
+    rho: 7.0
+
+solver:
+  type: heun_solver
+  params:
+    steps: 18
+    s_churn: 0.0
+    s_tmin: 0.0
+    s_tmax: .inf
+    s_noise: 1.0
+
+solver_sample:
+  type: heun_solver
+  params:
+    steps: 18
+
+loss:
+  type: mse_loss
+  params: {}
+
+optim:
+  type: adamw
+  params:
+    lr: 0.0001
+    weight_decay: 0.0
+
+## === INVERSE SAMPLING PARAMETERS ===
+inverse:
+  checkpoint: geomdist_single_mod_faust_000_hidden_512
+  color_source_modality: A
+  
+  # === INPUT OPTIONS (choose one) ===
+  
+  # Option 1: Single file or directory (all modalities get same input)
+  input: /home/ben/LRZSyncShare/Thesis/Data/data/MPI-FAUST/training/registrations/tr_reg_000.ply
+  
+  # Option 2: Per-modality input files (uncomment to use instead of 'input' above)
+  # input_per_modality:
+  #   A: /path/to/cloudA.ply
+  #   B: /path/to/cloudB.ply
+  #   C: /path/to/cloudC.ply
+  
+  # Number of diffusion steps (should match training schedule)
+  steps: 18
+  
+  # Whether to return full trajectory (all intermediate steps)
+  return_trajectory: false
+  
+  # Output directory for latent codes and trajectories
+  # If not specified, will use paths.samples / experiment_name / "inverse_output"
+  output_dir: null

@@ -1,0 +1,6 @@
+=== Sampling Log ===
+checkpoint: checkpoints/DiTGeomDist_smalr_dog_B_tiger_A/checkpoint-epoch-0999.pth
+target: gaussian
+steps: 64
+num_points: 100000
+mode: joint

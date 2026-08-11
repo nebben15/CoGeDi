@@ -1,0 +1,74 @@
+run:
+  mode: hpo
+  env: slurm
+
+hpo:
+  mode: optuna  # options: optuna, ablation
+  study_name: sigma_sampling
+  n_jobs: 2
+  paths:
+    base_config:
+      local: /home/ben/Thesis/UniGeomDist/configs/unigeomdist_geomdist-backbone_FAUST_000_007_clamp-joint.yaml
+      slurm: /home/stud/klb/UniGeomDist/configs/unigeomdist_geomdist-backbone_FAUST_000_007_clamp-joint.yaml
+    output_dir:
+      local: /home/ben/LRZSyncShare/Thesis/Data/hpo/
+      slurm: /home/stud/klb/storage/slurm/hpo/
+    mlflow_uri:
+      local: sqlite:////home/ben/LRZSyncShare/Thesis/Data/mlflow/mlflow.db
+      slurm: sqlite:////home/stud/klb/storage/slurm/mlflow/mlflow.db
+    optuna_storage:
+      local: sqlite:////home/ben/LRZSyncShare/Thesis/Data/hpo/optuna.db
+      slurm: sqlite:////home/stud/klb/storage/slurm/hpo/optuna.db
+  resume: true
+  verbose: false
+  mlflow:
+    enabled: true
+    run_prefix: hpo
+  ablation:
+    include_baseline: true
+  optuna:
+    trials: 1000
+    sampler: tpe  # options: tpe, random, grid
+    pruner: median  # options: median, none
+    seed: 123
+    grid_max_out: false
+  objective:
+    metric: weighted_correspondence
+    direction: minimize
+  metrics:
+    include:
+      - correspondence_evaluation_(average)
+      - joint_correspondence
+      - geometry_evaluation
+    exclude: []
+    weighted:
+      name: weighted_correspondence
+      joint_key: joint_correspondence.joint_correspondence_L2/B
+      corr_key: correspondence_evaluation_(average).mean_dist
+      weight: 0.5
+  overrides:
+    - path: train.max_epochs
+      value: 3
+    - path: train.batch_size
+      value: 87381
+    - path: eval.geometry.num_points
+      value: 10000
+    - path: eval.geometry.ref_samples
+      value: 10000
+    - path: eval.joint_correspondence.num_points
+      value: 10000
+    - path: eval.correspondence.num_points
+      value: 10000
+    - path: eval.correspondence.num_pairs
+      value: 50
+      
+  params:
+    - name: sigma_mode
+      path: train.sigma_sampling.sigma_mode
+      type: categorical
+      choices: [default, clamp, joint, clamp_joint]
+    - name: clamp_prob
+      path: train.sigma_sampling.clamp_prob
+      type: float
+      low: 0.0
+      high: 1.0
