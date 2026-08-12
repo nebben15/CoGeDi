@@ -63,8 +63,8 @@ def main():
     seq_A = "50025_shake_arms"
     seq_B = "50009_punching"
 
-    cloud_A = "/home/ben/LRZSyncShare/Thesis/Data/samples/DiTGeomDist_dfaust_50025_shake_arms_50009_punching/shape-A_e0999_n30000000_colored.ply"
-    cloud_B = "/home/ben/LRZSyncShare/Thesis/Data/samples/DiTGeomDist_dfaust_50025_shake_arms_50009_punching/shape-B_e0999_n30000000_colored.ply"
+    cloud_A = "samples/geofusion_dfaust_50025_shake_arms_50009_punching/shape-A_e0020_n300000_colored.ply"
+    cloud_B = "samples/geofusion_dfaust_50025_shake_arms_50009_punching/shape-B_e0020_n300000_colored.ply"
 
     offset_A = np.array([-1.5, 0, 0])
     offset_B = np.array([ 1.5, 0, 0])

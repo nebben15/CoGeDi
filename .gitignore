@@ -1,2 +1,4 @@
 /venv
 /logs
+.polyscope.ini
+imgui.ini
