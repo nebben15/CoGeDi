@@ -152,6 +152,7 @@ sample:
     # name: nose
     # A: [0.07243031,0.43507394,0.3256287]
   return_trajectory: false # diffusion trajectory
+  trajectory_space: denoised
   ascii: false
   guidance:
     enabled: false

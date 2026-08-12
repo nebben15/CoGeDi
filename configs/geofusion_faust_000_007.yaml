@@ -1,5 +1,5 @@
 run:
-  experiment_name: DiTGeomDist_smalr_dog_B_tiger_A
+  experiment_name: geofusion_faust_000_007
   supervision: full
   mode: sample # train/sample/eval/info
   env: local # local/slurm
@@ -19,17 +19,17 @@ paths:
     local: eval/
 
 data:
-  type: smalr #faust/dfaust/smal/smalr
+  type: faust  # faust/dfaust/smal/smalr
   modalities:
-    A: 6 # size of points
-    B: 6
+    A: 3 # size of points
+    B: 3
   meshes:
     A:
-      local: /path/to/data/SMALR/dog_B/dog_B_posed_0000.obj
-      slurm: /slurm/SMALR/dog_B/dog_B_posed_0000.obj
+      local: /path/to/data/MPI-FAUST/training/registrations/tr_reg_000.ply
+      slurm: /slurm/MPI-FAUST/training/registrations/tr_reg_000.ply
     B:
-      local: /path/to/data/SMALR/tiger_A/tiger_A_posed_00000.obj
-      slurm: /slurm/SMALR/tiger_A/tiger_A_posed_00000.obj
+      local: /path/to/data/MPI-FAUST/training/registrations/tr_reg_007.ply
+      slurm: /slurm/MPI-FAUST/training/registrations/tr_reg_007.ply
   normalize: true
   normalize_samples: 10000000
   normalize_chunk: 1000000
@@ -58,25 +58,22 @@ model:
     point_embedder:
       type: geomdist_point_embedder
       params:
-        token_dim: 320
+        token_dim: 416
         hidden_dim: 48
 
     sigma_embedder:
       type: geom_dist_fourier_embedder
       params:
-        hidden_size: 320
+        hidden_size: 416
 
     backbone:
-      type: dit_geomdist_backbone # geomdist_backbone/dit_backbone/geofusion_backbone/dit_geomdist_backbone
+      type: geofusion_backbone # geomdist_backbone/dit_backbone/geofusion_backbone/dit_geomdist_backbone
       params:
-        token_dim_DiT: 320
-        depth_DiT: 2
-        num_heads: 4
-        mlp_ratio: 4.0
-        max_tokens: 16
-        use_pos_emb: false
-        token_dim_geomdist: 320
-        depth_geomdist: 4
+        token_dim: 416
+        sigma_dim: 416
+        stem_depth: 2
+        fusion_depth: 2
+        head_depth: 1 # + 1 for final layer
         res_balance: 0.3
 
 schedule:
@@ -115,10 +112,7 @@ optim:
       max_epochs: 1000
 
 train:
-  #batch_size: 262144 
   batch_size: 131072
-  #batch_size: 100000
-  #batch_size: 20000
   steps_per_epoch: 512
   max_epochs: 1000
   log_every: 20
@@ -135,50 +129,46 @@ sample:
   num_points: 100000
   steps: 64
   target: gaussian
-  mode: joint
-  swap_texture_colors:
-    enabled: true 
-    modality_a: A
-    modality_b: B
-  colorize_joint:
-    enabled: false
+  mode: joint # joint/conditional
+  colorize_joint: # add correspondence coloring
+    enabled: true
     source_modality: A
-  conditional:
-    #name: finger
-    # A: [0.421431,-0.492658,0.098006]
+  conditional: # set the point to condition on
+    name: finger
+    A: [0.421431,-0.492658,0.098006]
     #A: [0.51120234,-0.31561434,0.20490514]
     # name: nose
     # A: [0.07243031,0.43507394,0.3256287]
-    # name: tail
-    # A: [-1.81218517,0.69718683,8.39775372]
-  return_trajectory: false
+  return_trajectory: false # diffusion trajectory
   trajectory_space: denoised
   ascii: false
   guidance:
     enabled: false
-    scale: 3.0
+    scale: 7.0
 
 eval:
+  name_suffix: conditional
   checkpoint: checkpoint-epoch-0999.pth
   target: gaussian
   steps: 64
   geometry:
-    enabled: true
+    enabled: false
     num_points: 100000
     ref_samples: 100000
-    fscore_threshold: 0.01
+    fscore_thresholds: [0.001, 0.003, 0.005]
     emd_max_points: 2048
     guidance:
       enabled: false
       scale: 3.0
   joint_correspondence:
-    enabled: true
+    enabled: false
     source_modality: A
     num_points: 100000
   correspondence:
     enabled: true
-    num_points: 10000
-    num_pairs: 100
+    seed: 42
+    num_points: 1000
+    num_pairs: 1000
     specific_pair:
       enable: false
       name: nose
