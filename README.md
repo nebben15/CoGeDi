@@ -2,20 +2,44 @@
 
 **Coupled Geometry Distributions (CoGeDi)** extends [Geometry Distributions](https://1zb.github.io/GeomDist/) to shape collections using the [UniDiffuser](https://github.com/thu-ml/unidiffuser) formulation for multi-modal diffusion. CoGeDi captures geometry and correspondence in one model.
 
+<img src="assets/UniGeomDistOverviewFixed.png" alt="drawing" width="800"/>
+
+**Paper**: [TODO]() 
+
+CoGeDi enables joint sampling
+
 <img src="assets/faust_five.png" alt="drawing" width="800"/>
 
-Paper: [TODO]() 
 
+and conditional sampling, where points are generated based on a given point on one shape:
+
+<img src="assets/non-iso-full-fixed-background.png" alt="drawing" width="800"/>
+
+CoGeDi works for points of any dimension, allowing for applications like **texture swapping** by using *6D* points
+
+<p align="center">
+  <img src="assets/TexturesBoth.png" alt="CoGeDi overview" width="400">
+</p>
+
+or **dynamic modelling** using *4D* points:
+
+<img src="assets/Dynamic.png" alt="drawing" width="800"/>
 
 ## Quick Start
 
-From the `CoGeDi` folder:
+### Setup:
+
+From the `CoGeDi` folder (the main repo folder):
 
 ```bash
 python3.12 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
+
+### Running Train/Sample/Eval:
+
+Each experiment has its own `.yaml` configuration file. In it, we set all data paths, hyperparams, and the mode: train, sample, eval. 
 
 Run with a config:
 

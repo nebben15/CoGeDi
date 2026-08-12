@@ -1,8 +1,8 @@
 run:
-  experiment_name: geofusion_faust_000_007_034_051_096
+  experiment_name: geofusion_dfaust_50025_shake_arms_50009_punching
   supervision: full
-  mode: sample # train/sample/eval/info
-  env: local # local/slurm
+  mode: train
+  env: local
   device: cuda
   seed: 0
 
@@ -15,33 +15,24 @@ paths:
     slurm: checkpoints/
   samples: 
     local: samples/
+    slurm: samples/
   eval: 
     local: eval/
 
 data:
-  type: faust # faust/dfaust/smal/smalr
+  type: dfaust
   modalities:
-    A: 3  # size of points
-    B: 3
-    C: 3
-    D: 3
-    E: 3
+    A: 4 # 3D + temporal component
+    B: 4
+  folder:
+    local: /home/ben/LRZSyncShare/Thesis/Data/data/DFAUST
+    slurm: /home/stud/klb/storage/slurm/DFAUST
   meshes:
     A:
-      local: /path/to/data/MPI-FAUST/training/registrations/tr_reg_000.ply
-      slurm: /slurm/MPI-FAUST/training/registrations/tr_reg_000.ply
+      name: 50025_shake_arms
     B:
-      local: /path/to/data/MPI-FAUST/training/registrations/tr_reg_007.ply
-      slurm: /slurm/MPI-FAUST/training/registrations/tr_reg_007.ply
-    C:
-      local: /path/to/data/MPI-FAUST/training/registrations/tr_reg_034.ply
-      slurm: /slurm/MPI-FAUST/training/registrations/tr_reg_034.ply
-    D:
-      local: /path/to/data/MPI-FAUST/training/registrations/tr_reg_051.ply
-      slurm: /slurm/MPI-FAUST/training/registrations/tr_reg_051.ply
-    E:
-      local: /path/to/data/MPI-FAUST/training/registrations/tr_reg_096.ply
-      slurm: /slurm/MPI-FAUST/training/registrations/tr_reg_096.ply
+      name: 50009_punching
+  times: true
   normalize: true
   normalize_samples: 10000000
   normalize_chunk: 1000000
@@ -124,7 +115,8 @@ optim:
       max_epochs: 1000
 
 train:
-  batch_size: 131072
+  # batch_size: 131072
+  batch_size: 95000
   accum_iter: 1
   steps_per_epoch: 512
   max_epochs: 1000
@@ -139,35 +131,34 @@ train:
 
 sample:
   checkpoint: checkpoint-epoch-0999.pth
-  num_points: 100000
+  num_points: 1000000
   steps: 64
   target: gaussian
-  mode: joint # joint/conditional
-  colorize_joint: # add correspondence coloring
+  mode: joint
+  colorize_joint:
     enabled: true
     source_modality: A
-  conditional: # set the point to condition on
+  conditional:
     name: finger
     A: [0.421431,-0.492658,0.098006]
+    #A: [0.51120234,-0.31561434,0.20490514]
     # name: nose
     # A: [0.07243031,0.43507394,0.3256287]
-  return_trajectory: false # diffusion trajectory
-  trajectory_space: denoised
-  ascii: false
+  return_trajectory: false
+  ascii: true
   guidance:
     enabled: false
     scale: 3.0
 
 eval:
-  name_suffix: main
-  checkpoint: checkpoint-epoch-0999.pth
+  checkpoint: checkpoint-epoch-0100.pth
   target: gaussian
   steps: 64
   geometry:
     enabled: true
     num_points: 100000
     ref_samples: 100000
-    fscore_thresholds: [0.001, 0.003, 0.005]
+    fscore_threshold: 0.01
     emd_max_points: 2048
     guidance:
       enabled: false
@@ -178,9 +169,8 @@ eval:
     num_points: 100000
   correspondence:
     enabled: true
-    seed: 42
-    num_points: 1000
-    num_pairs: 1000
+    num_points: 10000
+    num_pairs: 100
     specific_pair:
       enable: false
       name: nose
