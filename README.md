@@ -2,7 +2,7 @@
 
 **Coupled Geometry Distributions (CoGeDi)** extends [Geometry Distributions](https://1zb.github.io/GeomDist/) to shape collections using the [UniDiffuser](https://github.com/thu-ml/unidiffuser) formulation for multi-modal diffusion. CoGeDi captures geometry and correspondence in one model.
 
-<img src="assets/UniGeomDistOverviewFixed.png" alt="drawing" width="800"/>
+<img src="assets/CoGeDiOverview.png" alt="drawing" width="800"/>
 
 **Paper**: [TODO]() 
 
@@ -82,6 +82,11 @@ The following datasets contain shape collections with full (vertex level) corres
 - [DFAUST](https://dfaust.is.tue.mpg.de/): Dynamic human pose sequences.
 - [SMAL](https://smal.is.tue.mpg.de): Animal Shapes
 - [SMALR](https://smalr.is.tue.mpg.de/): Animal Shapes + Textures
+
+## Visualizing Results
+Sampling produces `.ply` point cloud files that can be viewed in tools like [Cloud Compare](https://www.cloudcompare.org/).
+
+For viewing the dynamic point clouds sampled from a D-FAUST model, we provide a simple script at `visualization/dynamic.py`. 
 
 ## Citation
 TODO
