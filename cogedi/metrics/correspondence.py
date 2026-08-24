@@ -4,6 +4,16 @@ import numpy as np
 from typing import Dict
 
 
+def _as_geometry_points(points: np.ndarray) -> np.ndarray:
+    """Project any point representation onto the first three spatial coordinates."""
+    arr = np.asarray(points, dtype=np.float32)
+    if arr.ndim == 1:
+        arr = arr.reshape(1, -1)
+    if arr.shape[-1] < 3:
+        raise ValueError(f"Expected at least 3 spatial dimensions, got shape {arr.shape}")
+    return arr[..., :3].reshape(-1, 3)
+
+
 def correspondence_metrics(cloud: np.ndarray, target_point: np.ndarray) -> Dict[str, float]:
     """Compute summary, distance, and likelihood metrics for a point cloud.
 
@@ -11,6 +21,9 @@ def correspondence_metrics(cloud: np.ndarray, target_point: np.ndarray) -> Dict[
         cloud: Array of shape [N, D] containing predicted points.
         target_point: Array of shape [D] containing the ground-truth point.
     """
+    cloud = _as_geometry_points(cloud)
+    target_point = _as_geometry_points(target_point)[0]
+
     if cloud.ndim != 2:
         raise ValueError("Cloud must be [N, D]")
 

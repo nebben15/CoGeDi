@@ -1,7 +1,7 @@
 run:
   experiment_name: DiTGeomDist_smalr_dog_B_tiger_A
   supervision: full
-  mode: sample # train/sample/eval/info
+  mode: eval # train/sample/eval/info
   env: local # local/slurm
   device: cuda
   seed: 0
@@ -25,10 +25,10 @@ data:
     B: 6
   meshes:
     A:
-      local: /path/to/data/SMALR/dog_B/dog_B_posed_0000.obj
+      local: /home/ben/LRZSyncShare/Thesis/Data/data/SMALR/dog_B/dog_B_posed_0000.obj
       slurm: /slurm/SMALR/dog_B/dog_B_posed_0000.obj
     B:
-      local: /path/to/data/SMALR/tiger_A/tiger_A_posed_00000.obj
+      local: /home/ben/LRZSyncShare/Thesis/Data/data/SMALR/tiger_A/tiger_A_posed_00000.obj
       slurm: /slurm/SMALR/tiger_A/tiger_A_posed_00000.obj
   normalize: true
   normalize_samples: 10000000

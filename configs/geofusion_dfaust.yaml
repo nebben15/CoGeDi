@@ -1,7 +1,7 @@
 run:
   experiment_name: geofusion_dfaust_50025_shake_arms_50009_punching
   supervision: full
-  mode: train
+  mode: sample
   env: local
   device: cuda
   seed: 0

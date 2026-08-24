@@ -9,6 +9,16 @@ from scipy.spatial import cKDTree
 from scipy.spatial.distance import cdist
 
 
+def _as_geometry_points(points: np.ndarray) -> np.ndarray:
+    """Project any point representation onto the first three spatial coordinates."""
+    arr = np.asarray(points, dtype=np.float32)
+    if arr.ndim == 1:
+        arr = arr.reshape(1, -1)
+    if arr.shape[-1] < 3:
+        raise ValueError(f"Expected at least 3 spatial dimensions, got shape {arr.shape}")
+    return arr[..., :3].reshape(-1, 3)
+
+
 def chamfer_distance_l2(a: np.ndarray, b: np.ndarray) -> float:
     """
     Compute symmetric Chamfer distance using *L2* (non-squared) distances.
@@ -24,10 +34,12 @@ def chamfer_distance_l2(a: np.ndarray, b: np.ndarray) -> float:
     missing coverage (A far from B) and extra mass (B far from A) and is
     widely used for point-cloud similarity.
     """
-    tree_a = cKDTree(a)
-    tree_b = cKDTree(b)
-    d_a_to_b, _ = tree_b.query(a)
-    d_b_to_a, _ = tree_a.query(b)
+    a_xyz = _as_geometry_points(a)
+    b_xyz = _as_geometry_points(b)
+    tree_a = cKDTree(a_xyz)
+    tree_b = cKDTree(b_xyz)
+    d_a_to_b, _ = tree_b.query(a_xyz)
+    d_b_to_a, _ = tree_a.query(b_xyz)
     return float(np.mean(d_a_to_b) + np.mean(d_b_to_a))
 
 
@@ -43,10 +55,12 @@ def hausdorff_distance(a: np.ndarray, b: np.ndarray) -> float:
     This metric is sensitive to outliers but provides a strict notion of
     shape mismatch.
     """
-    tree_a = cKDTree(a)
-    tree_b = cKDTree(b)
-    d_a_to_b, _ = tree_b.query(a)
-    d_b_to_a, _ = tree_a.query(b)
+    a_xyz = _as_geometry_points(a)
+    b_xyz = _as_geometry_points(b)
+    tree_a = cKDTree(a_xyz)
+    tree_b = cKDTree(b_xyz)
+    d_a_to_b, _ = tree_b.query(a_xyz)
+    d_b_to_a, _ = tree_a.query(b_xyz)
     return float(max(np.max(d_a_to_b), np.max(d_b_to_a)))
 
 
@@ -61,8 +75,9 @@ def point_to_surface_distance(points: np.ndarray, mesh: trimesh.Trimesh) -> floa
     If mesh proximity queries are unavailable, this metric should be
     approximated by point-to-point distances against dense reference samples.
     """
+    points_xyz = _as_geometry_points(points)
     pq = trimesh.proximity.ProximityQuery(mesh)
-    dist = pq.distance(points)
+    dist = pq.distance(points_xyz)
     return float(np.mean(dist))
 
 
@@ -78,15 +93,16 @@ def earth_movers_distance(a: np.ndarray, b: np.ndarray, max_points: int) -> floa
     This approximation is suitable for moderate N (e.g., 1024–4096). Larger
     values can be expensive in memory and time.
     """
-    # set seed for reproducibility
+    a_xyz = _as_geometry_points(a)
+    b_xyz = _as_geometry_points(b)
     rng = np.random.default_rng(42)
-    n = min(len(a), len(b), max_points)
+    n = min(len(a_xyz), len(b_xyz), max_points)
     if n <= 0:
         return float("nan")
-    idx_a = rng.choice(len(a), size=n, replace=False)
-    idx_b = rng.choice(len(b), size=n, replace=False)
-    a_sub = a[idx_a]
-    b_sub = b[idx_b]
+    idx_a = rng.choice(len(a_xyz), size=n, replace=False)
+    idx_b = rng.choice(len(b_xyz), size=n, replace=False)
+    a_sub = a_xyz[idx_a]
+    b_sub = b_xyz[idx_b]
     cost = cdist(a_sub, b_sub, metric="euclidean")
     row, col = linear_sum_assignment(cost)
     return float(cost[row, col].mean())
@@ -103,10 +119,12 @@ def f_score(a: np.ndarray, b: np.ndarray, threshold: float) -> Tuple[float, floa
     This metric captures how well two point clouds overlap at a given
     tolerance and is commonly used for geometric reconstruction evaluation.
     """
-    tree_a = cKDTree(a)
-    tree_b = cKDTree(b)
-    d_a_to_b, _ = tree_b.query(a)
-    d_b_to_a, _ = tree_a.query(b)
+    a_xyz = _as_geometry_points(a)
+    b_xyz = _as_geometry_points(b)
+    tree_a = cKDTree(a_xyz)
+    tree_b = cKDTree(b_xyz)
+    d_a_to_b, _ = tree_b.query(a_xyz)
+    d_b_to_a, _ = tree_a.query(b_xyz)
     precision = float(np.mean(d_a_to_b <= threshold)) if len(d_a_to_b) > 0 else 0.0
     recall = float(np.mean(d_b_to_a <= threshold)) if len(d_b_to_a) > 0 else 0.0
     denom = precision + recall

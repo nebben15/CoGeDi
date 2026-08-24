@@ -168,7 +168,11 @@ def _build_guidance_cfg(cfg, *, schedule, mode: str, section: str) -> GuidanceCo
 
 def _state_to_points(state: State, modality: str) -> np.ndarray:
 	x = state[modality].detach().cpu().numpy().astype(np.float32)
-	return x.reshape(-1, x.shape[-1])
+	if x.ndim == 1:
+		x = x.reshape(1, -1)
+	if x.shape[-1] < 3:
+		raise ValueError(f"State for modality {modality!r} must have at least 3 coordinates, got shape {x.shape}")
+	return x[..., :3].reshape(-1, 3)
 
 
 def _project_to_mesh_barycentric(mesh: trimesh.Trimesh, points: np.ndarray) -> tuple[np.ndarray, np.ndarray]:

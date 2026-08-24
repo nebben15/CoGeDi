@@ -1,4 +1,7 @@
 /venv
 /logs
+/eval
 .polyscope.ini
 imgui.ini
+**/__pycache__
+__pycache__/

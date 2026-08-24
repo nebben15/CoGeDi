@@ -1,0 +1,6 @@
+=== Sampling Log ===
+checkpoint: checkpoints/geofusion_dfaust_50025_shake_arms_50009_punching/checkpoint-epoch-0999.pth
+target: gaussian
+steps: 64
+num_points: 1000000
+mode: joint
